@@ -5,7 +5,7 @@
     <title>Cadastro</title>
 </head>
 <body>
-<form action="pages/formulario_contato/contato.php" method="POST">
+<form id="formulario_contato" action="pages/formulario_contato/contato.php" method="POST">
     <label for="nome">Nome:</label><br>
     <input type="text" id="nome" name="nome"><br><br>
 
@@ -20,7 +20,39 @@
     
     <input type="submit" value="Enviar">
 </form>
+<div id="resultado"></div>
 
+ <script>
+        $(document).ready(function() {
+            $('#formulario_contato').submit(function(event) {
+                event.preventDefault(); // Evita a submissão padrão do formulário
+			
+
+                var nome = $('#nome').val();
+                var email = $('#email').val();
+                var assunto = $('#assunto').val();
+                var mensagem = $('#mensagem').val();
+
+                // Requisição AJAX para calcular.php
+                $.ajax({
+                    type: 'POST',
+                    url: '/atividade2/pages/formulario_contato/contato.php',
+                    data: {
+                        nome: nome,
+                        email: email,
+                        assunto: assunto,
+                        mensagem: mensagem
+                    },
+                    success: function(response) {
+                        $('#resultado').html('Resultado: ' + response);
+                    },
+                    error: function(xhr, status, error) {
+                        $('#resultado').html('Erro: ' + error);
+                    }
+                });
+            });
+        });
+    </script>
 
 </body>
 </html>

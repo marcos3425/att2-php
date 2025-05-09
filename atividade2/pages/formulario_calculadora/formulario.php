@@ -4,29 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora</title>
-    <!-- jQuery com fallback caso CDN falhe -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        // Verifica se jQuery foi carregado, caso contrário carrega localmente
-        window.jQuery || document.write('<script src="js/jquery-3.6.0.min.js"><\/script>');
-    </script>
-    <style>
-        .loading {
-            color: #666;
-            font-style: italic;
-        }
-        .error {
-            color: red;
-        }
-        .result {
-            color: green;
-            font-weight: bold;
-        }
-    </style>
+
 </head>
 <body>
 
-<form id="formulario_calculadora" method="POST">
+<form id="formulario_calculadora" action="pages/formulario_calculadora/calculadora.php" method="POST">
     <label for="numero1">Número 1:</label><br>
     <input type="number" id="numero1" name="numero1" required><br><br>
 
@@ -46,50 +28,35 @@
 
 <div id="resultado"></div>
 
-<script>
-    // Usando jQuery no modo seguro para evitar conflitos
-    (function($) {
-        $(document).ready(function () {
-            $('#formulario_calculadora').submit(function (event) {
-                event.preventDefault();
+  <script>
+        $(document).ready(function() {
+            $('#formulario_calculadora').submit(function(event) {
+                event.preventDefault(); // Evita a submissão padrão do formulário
+			
 
-                var $resultado = $('#resultado');
-                $resultado.removeClass('error result').addClass('loading').html('Carregando...');
+                var numero1 = $('#numero1').val();
+                var numero2 = $('#numero2').val();
+                var operacao = $('#operacao').val();
 
-                // Limpa mensagens anteriores após 3 segundos
-                var clearMessage = setTimeout(function() {
-                    $resultado.empty().removeClass('loading error result');
-                }, 3000);
-
+                // Requisição AJAX para calcular.php
                 $.ajax({
                     type: 'POST',
-                    url: 'pages/formulario_calculadora/calculadora.php',
-                    data: $(this).serialize(),
-                    dataType: 'text', // Especifica o tipo de resposta esperada
-                    success: function (response) {
-                        clearTimeout(clearMessage);
-                        $resultado.removeClass('loading').addClass('result').html("Resultado: " + response);
+                    url: '/atividade2/pages/formulario_calculadora/calculadora.php',
+                    data: {
+                        numero1: numero1,
+                        numero2: numero2,
+                        operacao: operacao
                     },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        clearTimeout(clearMessage);
-                        var errorMsg = "Erro ao processar: ";
-                        
-                        if (textStatus === 'timeout') {
-                            errorMsg += "Tempo de requisição excedido";
-                        } else if (textStatus === 'error') {
-                            errorMsg += errorThrown || "Erro desconhecido";
-                        } else {
-                            errorMsg += textStatus;
-                        }
-                        
-                        $resultado.removeClass('loading').addClass('error').html(errorMsg);
+                    success: function(response) {
+                        $('#resultado').html('Resultado: ' + response);
                     },
-                    timeout: 5000 // Define timeout de 5 segundos
+                    error: function(xhr, status, error) {
+                        $('#resultado').html('Erro: ' + error);
+                    }
                 });
             });
         });
-    })(jQuery);
-</script>
+    </script>
 
 </body>
 </html>
